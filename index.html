@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ฟอร์มกีฬาสี</title>
+<!-- โหลด LIFF SDK ก่อนเรียกใช้งาน -->
 <script src="https://static.line-scdn.net/liff/2/sdk.js"></script>
 <style>
     body {
@@ -58,33 +59,47 @@
 </div>
 
 <script>
+let liffInitialized = false;
+
 async function main() {
-    await liff.init({ liffId: "2008586318-je076pJV" });
-    if (!liff.isLoggedIn()) {
-        liff.login();
+    try {
+        await liff.init({ liffId: "2008586318-je076pJV" });
+        liffInitialized = true;
+        console.log("LIFF initialized");
+
+        if (!liff.isLoggedIn()) {
+            liff.login();
+        }
+    } catch(err) {
+        console.error("LIFF init error:", err);
+        alert("เกิดข้อผิดพลาดในการโหลด LIFF: " + err);
     }
 }
+
 main();
 
 async function sendMessage() {
+    if(!liffInitialized) {
+        alert("LIFF ยังไม่โหลด กรุณารอสักครู่");
+        return;
+    }
+
     const name = document.getElementById("name").value.trim();
     const message = document.getElementById("message").value.trim();
 
-    if(name === "" || message === "") {
+    if(!name || !message) {
         alert("กรุณากรอกข้อมูลให้ครบ");
         return;
     }
 
     try {
         await liff.sendMessages([
-            {
-                type: "text",
-                text: `ชื่อ: ${name}\nข้อความ: ${message}`
-            }
+            { type: "text", text: `ชื่อ: ${name}\nข้อความ: ${message}` }
         ]);
         alert("ส่งข้อมูลสำเร็จ!");
         liff.closeWindow();
     } catch(err) {
+        console.error(err);
         alert("เกิดข้อผิดพลาด: " + err);
     }
 }
