@@ -1,71 +1,93 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
-    <meta charset="utf-8" />
-    <title>ฟอร์มกีฬาสี</title>
-    <script src="https://static.line-scdn.net/liff/2/sdk.js"></script>
-    <style>
-        body {
-            font-family: "Prompt", sans-serif;
-            background: linear-gradient(135deg, #ffb6c1, #98ff98);
-            padding: 30px;
-        }
-        .box {
-            background: white;
-            padding: 20px;
-            border-radius: 16px;
-            max-width: 420px;
-            margin: auto;
-        }
-        input, textarea {
-            width: 100%;
-            padding: 10px;
-            margin: 8px 0;
-            border-radius: 12px;
-            border: 2px solid #81c784;
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #e91e63;
-            color: white;
-            font-weight: bold;
-            border: none;
-            border-radius: 12px;
-            font-size: 18px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ฟอร์มกีฬาสี</title>
+<script src="https://static.line-scdn.net/liff/2/sdk.js"></script>
+<style>
+    body {
+        font-family: "Prompt", sans-serif;
+        background: linear-gradient(135deg, #ffb6c1, #98ff98);
+        padding: 20px;
+        margin: 0;
+    }
+    .container {
+        max-width: 480px;
+        margin: auto;
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    h2 {
+        text-align: center;
+        color: #e91e63;
+    }
+    input, textarea {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border-radius: 12px;
+        border: 2px solid #81c784;
+        font-size: 16px;
+    }
+    button {
+        width: 100%;
+        padding: 14px;
+        background-color: #e91e63;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    button:hover {
+        background-color: #d81b60;
+    }
+</style>
 </head>
 <body>
-    <div class="box">
-        <h2 style="color:#e91e63;text-align:center;">ส่งข้อมูลกีฬาสี</h2>
+<div class="container">
+    <h2>ส่งข้อมูลกีฬาสี</h2>
+    <input type="text" id="name" placeholder="ชื่อ" required>
+    <textarea id="message" placeholder="ข้อความ" required></textarea>
+    <button onclick="sendMessage()">ส่งข้อมูล</button>
+</div>
 
-        <input id="name" type="text" placeholder="ชื่อ" required />
-        <textarea id="message" placeholder="ข้อความ" required></textarea>
-        <button onclick="sendMessage()">ส่งข้อมูล</button>
-    </div>
+<script>
+async function main() {
+    await liff.init({ liffId: "2008586318-je076pJV" });
+    if (!liff.isLoggedIn()) {
+        liff.login();
+    }
+}
+main();
 
-    <script>
-        async function main() {
-            await liff.init({ liffId: "2008586318-je076pJV" });
-            if (!liff.isLoggedIn()) liff.login();
-        }
-        main();
+async function sendMessage() {
+    const name = document.getElementById("name").value.trim();
+    const message = document.getElementById("message").value.trim();
 
-        async function sendMessage() {
-            let name = document.getElementById("name").value;
-            let message = document.getElementById("message").value;
+    if(name === "" || message === "") {
+        alert("กรุณากรอกข้อมูลให้ครบ");
+        return;
+    }
 
-            await liff.sendMessages([
-                {
-                    type: "text",
-                    text: `ชื่อ: ${name}\nข้อความ: ${message}`
-                }
-            ]);
-
-            alert("ส่งข้อมูลสำเร็จ!");
-            liff.closeWindow();
-        }
-    </script>
+    try {
+        await liff.sendMessages([
+            {
+                type: "text",
+                text: `ชื่อ: ${name}\nข้อความ: ${message}`
+            }
+        ]);
+        alert("ส่งข้อมูลสำเร็จ!");
+        liff.closeWindow();
+    } catch(err) {
+        alert("เกิดข้อผิดพลาด: " + err);
+    }
+}
+</script>
 </body>
 </html>
